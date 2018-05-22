@@ -1,5 +1,5 @@
 """
-Based on generic thermostat units. Added a separate AC entity.
+Support for generic thermostat units.
 
 For more details about this platform, please refer to the documentation at
 https://home-assistant.io/components/climate.generic_thermostat/
@@ -115,14 +115,15 @@ class GenericThermostat(ClimateDevice):
         self._saved_target_temp = target_temp if target_temp is not None \
             else away_temp
 
-        self._operation_list = []
+        self._operation_list = [STATE_OFF]
         if ac_entity_id:
             self._operation_list.append(STATE_COOL)
         if heater_entity_id:
             self._operation_list.append(STATE_HEAT)
-        self._operation_list.append(STATE_OFF)
 
-        if self.ac_mode:
+        if ac_entity_id and heater_entity_id:
+            self._current_operation = STATE_OFF
+        elif ac_entity_id:
             self._current_operation = STATE_COOL
         else:
             self._current_operation = STATE_HEAT
